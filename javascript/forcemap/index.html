@@ -1,0 +1,130 @@
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js" type="text/javascript"></script>
+    <script src="jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="stats.js" type="text/javascript"></script>
+    <script src="matrix.js" type="text/javascript"></script>
+    <script src="index.js" type="text/javascript"></script>
+    <script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec4 color;
+attribute vec2 textureCoord;
+
+uniform   mat4 mvpMatrix;
+varying   vec4 vColor;
+varying   vec2 vTextureCoord;
+varying   vec4 pos;
+
+void main(void){
+    vColor = color;
+    vTextureCoord = textureCoord;
+    gl_Position   = mvpMatrix * vec4(position, 1.0);
+    pos = gl_Position;
+}
+    </script>
+
+    <script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D texture;
+uniform float     size;
+uniform vec4      colorTransform;
+uniform int       type;
+varying vec4      vColor;
+varying vec2      vTextureCoord;
+varying vec4 pos;
+
+void main(void){
+    if(type == 0){
+        //9*9 blur filter
+        vec2 tFrag = vec2(1.0 / size);
+        vec4 destColor = texture2D(texture, gl_FragCoord.st * tFrag);
+        destColor *= 0.08;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-3.000000,  -4.000000)) * tFrag) * 0.011429;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  -4.000000)) * tFrag) * 0.016000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  -4.000000)) * tFrag) * 0.016000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(3.000000,  -4.000000)) * tFrag) * 0.011429;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-4.000000,  -3.000000)) * tFrag) * 0.011429;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  -3.000000)) * tFrag) * 0.016000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(0.000000,  -3.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  -3.000000)) * tFrag) * 0.016000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(4.000000,  -3.000000)) * tFrag) * 0.011429;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-3.000000,  -2.000000)) * tFrag) * 0.016000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  -2.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  -2.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(3.000000,  -2.000000)) * tFrag) * 0.016000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-4.000000,  -1.000000)) * tFrag) * 0.016000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  -1.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(0.000000,  -1.000000)) * tFrag) * 0.080000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  -1.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(4.000000,  -1.000000)) * tFrag) * 0.016000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-3.000000,  0.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  0.000000)) * tFrag) * 0.080000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  0.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(4.000000,  0.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-3.000000,  1.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  1.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  1.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(3.000000,  1.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-4.000000,  2.000000)) * tFrag) * 0.013333;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  2.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(0.000000,  2.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  2.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(4.000000,  2.000000)) * tFrag) * 0.013333;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-3.000000,  3.000000)) * tFrag) * 0.013333;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  3.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  3.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(3.000000,  3.000000)) * tFrag) * 0.013333;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-4.000000,  4.000000)) * tFrag) * 0.010000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  4.000000)) * tFrag) * 0.013333;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(0.000000,  4.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  4.000000)) * tFrag) * 0.013333;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(4.000000,  4.000000)) * tFrag) * 0.010000;
+
+        gl_FragColor  = vColor * destColor;
+    }
+    else if(type == 1){
+        //5*5 blur filter
+        vec2 tFrag = vec2(1.0 / size);
+        vec4 destColor = texture2D(texture, gl_FragCoord.st * tFrag);
+        destColor *= 0.16;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  -2.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  -2.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(0.000000,  -2.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  -2.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  -2.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  -1.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  -1.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(0.000000,  -1.000000)) * tFrag) * 0.080000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  -1.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  -1.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  0.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  0.000000)) * tFrag) * 0.080000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  0.000000)) * tFrag) * 0.080000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  0.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  1.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  1.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(0.000000,  1.000000)) * tFrag) * 0.080000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  1.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  1.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-2.000000,  2.000000)) * tFrag) * 0.020000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(-1.000000,  2.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(0.000000,  2.000000)) * tFrag) * 0.040000;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(1.000000,  2.000000)) * tFrag) * 0.026667;
+        destColor += texture2D(texture, (gl_FragCoord.st + vec2(2.000000,  2.000000)) * tFrag) * 0.020000;
+
+        gl_FragColor  = vColor * destColor * colorTransform;
+    }
+    else{
+        vec4 smpColor = texture2D(texture, vTextureCoord);
+        gl_FragColor = smpColor;
+    }
+}
+    </script>
+
+</head>
+<body onload="setup()" style="background-color: #000;">
+<canvas id="canvas"></canvas>
+<canvas id="img_canvas"></canvas>
+</body>
+</html>
